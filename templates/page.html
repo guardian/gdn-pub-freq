@@ -32,11 +32,15 @@ $.ajax({
   dataType: "json",
   url: "/api/data/{{date}}",
   success: function(data) {
-  	var options = {};
+  	var options = {
+
+  	};
   	var chartData = {
   		labels: data.hour_series,
   		datasets: [
   			{
+		  		fillColor: '#2e3192',
+		  		strokeColor: '#2e3192',
   				data: data.count_series
   			}
   		]
