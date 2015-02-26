@@ -41,6 +41,7 @@ class NextDay(webapp2.RequestHandler):
 		return webapp2.redirect('/day/{0}'.format(new_date_string(date)))
 
 app = webapp2.WSGIApplication([
+	webapp2.Route(r'/', handler=MainPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/previous', handler=PreviousDay),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/next', handler=NextDay),
