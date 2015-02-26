@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Publication by hour for {{date}}{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="article-heading">Publishing history for {{date}}</h1>
+
+			<div>
+			<canvas id="barChart" width="400" height="400"></canvas>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1/Chart.js"></script>
+
+<script>
+var ctx = document.getElementById("barChart").getContext("2d");
+
+var data = {
+	labels: ['0', '1'],
+	datasets: [{
+		data: [12,15]
+	}]
+};
+
+$.ajax({
+  dataType: "json",
+  url: "/api/data/{{date}}",
+  success: function() {
+  	var options = {};
+  	var myBarChart = new Chart(ctx).Bar(data, options);
+  }
+});
+
+</script>
+{% endblock %}

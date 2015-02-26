@@ -17,5 +17,16 @@ class MainPage(webapp2.RequestHandler):
 
 		self.response.out.write(template.render(template_values))
 
-app = webapp2.WSGIApplication([('/', MainPage)],
+class DayPage(webapp2.RequestHandler):
+	def get(self, date):
+		template = jinja_environment.get_template('page.html')
+		
+		template_values = {
+			'date': date,
+		}
+
+		self.response.out.write(template.render(template_values))
+
+app = webapp2.WSGIApplication([
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),],
                               debug=True)
