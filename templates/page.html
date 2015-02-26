@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Publication by hour for {{date}}{% endblock %}
+{% block title %}Publication by hour for {{date_string}}{% endblock %}
 
 {% block content %}
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<h1 class="article-heading">Publishing history for {{date}}</h1>
+			<h1 class="article-heading">Publishing history for {{date.strftime('%d/%m/%Y')}}</h1>
 
+			<p>{{date.strftime("%A")}}</p>
 			<div>
 			<canvas id="barChart" width="800" height="400"></canvas>
 			</div>
@@ -30,7 +31,7 @@ var data = {
 
 $.ajax({
   dataType: "json",
-  url: "/api/data/{{date}}",
+  url: "/api/data/{{date_string}}",
   success: function(data) {
   	var options = {
 

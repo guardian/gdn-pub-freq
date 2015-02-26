@@ -3,8 +3,7 @@ import jinja2
 import os
 import json
 import logging
-from urllib import quote, urlencode
-from google.appengine.api import urlfetch
+import datetime
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
@@ -22,7 +21,8 @@ class DayPage(webapp2.RequestHandler):
 		template = jinja_environment.get_template('page.html')
 		
 		template_values = {
-			'date': date,
+			'date_string': date,
+			'date': datetime.datetime.strptime(date, '%Y-%m-%d')
 		}
 
 		self.response.out.write(template.render(template_values))
