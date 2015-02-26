@@ -4,6 +4,9 @@ import os
 import json
 import logging
 import urllib
+import re
+
+from collections import Counter
 
 from google.appengine.api import urlfetch
 from google.appengine.api.urlfetch import fetch
@@ -37,6 +40,16 @@ def extract_results(rpc):
 	data = response.get('response', {})
 	return data.get('results', [])
 
+def extract_hour_of_publication(content):
+	pattern = re.compile(r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})Z$')
+
+
+	logging.info(content['webPublicationDate'])
+	dt_elements = pattern.search(content['webPublicationDate']).groups()
+	logging.info(dt_elements)
+
+	return dt_elements[3]
+
 def read_all_content_for_day(date):
 
 	params = {
@@ -69,20 +82,21 @@ def read_all_content_for_day(date):
 	other_pages = [(urlfetch.create_rpc(), page+1) for page in range(1, page_count)]
 	async_calls =[urlfetch.make_fetch_call(rpc, page_url(date, page)) for rpc, page in other_pages]
 	page_responses = map(extract_results, async_calls)
-	logging.info(page_responses)
+	all_content = reduce(lambda r, rs: r + rs, page_responses, results)
 
-	return reduce(lambda r, rs: r + rs, page_responses, results)
-
+	return all_content
 
 class DayData(webapp2.RequestHandler):
 	def get(self, date):
 		headers.json(self.response)
 
 		days_content = read_all_content_for_day(date)
+
+		counts = Counter(map(extract_hour_of_publication, days_content))
 		
 		data = {
 			'date': date,
-			'content': days_content,
+			'hour_counts': counts,
 			'total_content': len(days_content),
 		}
 
