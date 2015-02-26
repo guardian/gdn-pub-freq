@@ -90,7 +90,11 @@ class DayData(webapp2.RequestHandler):
 	def get(self, date):
 		headers.json(self.response)
 
-		days_content = read_all_content_for_day(date)
+		days_content = memcache.get(date)
+
+		if not days_content:
+			days_content = read_all_content_for_day(date)
+			memcache.set(date, days_content, 30 * 60)
 
 		counts = Counter(map(extract_hour_of_publication, days_content))
 		
