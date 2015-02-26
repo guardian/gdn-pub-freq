@@ -50,5 +50,15 @@ $.ajax({
   }
 });
 
+$(window).keyup(function(event){
+	//alert(event.which);
+	if(event.which === 39) {
+		window.location.replace('/day/{{date_string}}/next');
+	}
+
+	if(event.which === 37) {
+		window.location.replace('/day/{{date_string}}/previous');
+	}
+})
 </script>
 {% endblock %}
