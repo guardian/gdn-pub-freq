@@ -9,7 +9,7 @@
 			<h1 class="article-heading">Publishing history for {{date}}</h1>
 
 			<div>
-			<canvas id="barChart" width="400" height="400"></canvas>
+			<canvas id="barChart" width="800" height="400"></canvas>
 			</div>
 		</div>
 	</div>
@@ -31,9 +31,17 @@ var data = {
 $.ajax({
   dataType: "json",
   url: "/api/data/{{date}}",
-  success: function() {
+  success: function(data) {
   	var options = {};
-  	var myBarChart = new Chart(ctx).Bar(data, options);
+  	var chartData = {
+  		labels: data.hour_series,
+  		datasets: [
+  			{
+  				data: data.count_series
+  			}
+  		]
+  	};
+  	var myBarChart = new Chart(ctx).Bar(chartData, options);
   }
 });
 

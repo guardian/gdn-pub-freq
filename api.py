@@ -99,6 +99,7 @@ class DayData(webapp2.RequestHandler):
 			'hour_counts': counts,
 			'total_content': len(days_content),
 			'count_series': [counts[k] for k in sorted(counts.keys())],
+			'hour_series': [k for k in sorted(counts.keys())]
 		}
 
 		self.response.out.write(json.dumps(data))
