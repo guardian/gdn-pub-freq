@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Publication by hour for {{date_string}}{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="article-heading">Hour {{hour}} of {{date.strftime('%d/%m/%Y')}} </h1>
+
+			<ul>
+				{% for item in content %}
+				<li><a href="item.webUrl">{{item.webTitle}}</a><br><small>{{item.webPublicationDate}}</small></li>
+				{% endfor %}
+			</ul>
+
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}

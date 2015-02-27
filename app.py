@@ -5,6 +5,8 @@ import json
 import logging
 import datetime
 
+import content_api
+
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
 
@@ -68,9 +70,44 @@ class TitlePage(webapp2.RequestHandler):
 
 		self.response.out.write(template.render(template_values))		
 
+class HourPage(webapp2.RequestHandler):
+	def get(self, date, hour):
+		template = jinja_environment.get_template('hour.html')
+
+		logging.info(hour)
+
+		hour_string = '{0}T{1}'.format(date, hour)
+		start_hour = datetime.datetime.strptime(hour_string, '%Y-%m-%dT%H')
+		end_hour = start_hour + datetime.timedelta(hours=1)
+
+		params = {
+			'api-key': content_api.capi_key(),
+			'from-date': start_hour.isoformat(),
+			'to-date': end_hour.isoformat(),
+			'page-size': 50,
+		}
+
+		r = content_api.search(params)
+
+		content = []
+
+		if r:
+			data = json.loads(r)
+			content = data.get("response", {}).get("results", [])
+		
+		template_values = {
+			'date_string': date,
+			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
+			'hour': hour,
+			'content': content,
+		}
+
+		self.response.out.write(template.render(template_values))
+
 app = webapp2.WSGIApplication([
 	webapp2.Route(r'/', handler=MainPage),
 	webapp2.Route(r'/title', handler=TitlePage),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/hour/<hour:\d{2}>', handler=HourPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/previous', handler=PreviousDay),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/next', handler=NextDay),
