@@ -8,7 +8,7 @@
 		<div class="col-md-12">
 			<h1 class="article-heading">Publishing history for {{date.strftime('%d/%m/%Y')}}</h1>
 
-			<p>{{date.strftime("%A")}}</p>
+			<p>{{date.strftime("%A")}}<br><em>Left/right arrows yesterday/tomorrow or <a href="/day/{{date_string}}/previous">previous day</a>, <a href="/day/{{date_string}}/next">next day</a>, <a href="/day/{{date_string}}/previous/week">previous week</a>, <a href="/day/{{date_string}}/next/week">next week</a></em></p>
 			<div>
 			<canvas id="barChart" width="800" height="400"></canvas>
 			</div>
