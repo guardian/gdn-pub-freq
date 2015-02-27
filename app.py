@@ -58,8 +58,19 @@ class NextWeek(webapp2.RequestHandler):
 	def get(self, date):
 		return webapp2.redirect('/day/{0}'.format(new_week_string(date)))
 
+class TitlePage(webapp2.RequestHandler):
+	def get(self):
+		template = jinja_environment.get_template('title.html')
+		
+		template_values = {
+			'app_title': 'gdn-pub-freq.appspot.com',
+		}
+
+		self.response.out.write(template.render(template_values))		
+
 app = webapp2.WSGIApplication([
 	webapp2.Route(r'/', handler=MainPage),
+	webapp2.Route(r'/title', handler=TitlePage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/previous', handler=PreviousDay),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/next', handler=NextDay),
