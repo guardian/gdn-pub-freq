@@ -11,8 +11,13 @@ jinja_environment = jinja2.Environment(
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template = jinja_environment.get_template('index.html')
+
+		today = datetime.date.today()
+		yesterday = today + datetime.timedelta(days=-1)
 		
-		template_values = {}
+		template_values = {
+			'yesterday': yesterday.isoformat()
+		}
 
 		self.response.out.write(template.render(template_values))
 
