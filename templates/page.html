@@ -49,6 +49,14 @@ $.ajax({
   		]
   	};
   	var myBarChart = new Chart(ctx).Bar(chartData, options);
+
+  	document.getElementById("barChart").onclick = function(evt){
+    var activeBars = myBarChart.getBarsAtEvent(evt);
+    if(activeBars) {
+	    //console.log(activeBars[0].label);
+	    window.location.replace('/day/{{date_string}}/hour/' + activeBars[0].label);
+	}
+    };
   }
 });
 
@@ -61,6 +69,7 @@ $(window).keyup(function(event){
 	if(event.which === 37) {
 		window.location.replace('/day/{{date_string}}/previous');
 	}
-})
+});
+
 </script>
 {% endblock %}
