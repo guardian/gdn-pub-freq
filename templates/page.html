@@ -33,7 +33,7 @@ var data = {
 
 $.ajax({
   dataType: "json",
-  url: "/api/data/{{date_string}}",
+  url: "{{api_url}}",
   success: function(data) {
   	var options = {
   		animationEasing: 'easeOutExpo'

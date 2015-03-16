@@ -50,7 +50,7 @@ def extract_hour_of_publication(content):
 
 	return dt_elements[3]
 
-def read_all_content_for_day(date):
+def read_all_content_for_day(date, production_office=None):
 
 	params = {
 		'api-key': content_api.capi_key(),
@@ -59,9 +59,14 @@ def read_all_content_for_day(date):
 		'page-size': 50,
 	}
 
+	if production_office:
+		params['production-office'] = production_office
+
 
 	url = "http://{host}/search?{params}".format(host=content_api.capi_host(),
 		params=urllib.urlencode(params))
+
+	logging.info(url)
 
 	r = fetch(url)
 
@@ -87,14 +92,19 @@ def read_all_content_for_day(date):
 	return all_content
 
 class DayData(webapp2.RequestHandler):
-	def get(self, date):
+	def get(self, date, production_office=None):
 		headers.json(self.response)
 
-		days_content = memcache.get(date)
+		cache_key = date
+
+		if production_office:
+			cache_key = "{0}-{1}".format(date, production_office)
+
+		days_content = memcache.get(cache_key)
 
 		if not days_content:
-			days_content = read_all_content_for_day(date)
-			memcache.set(date, days_content, 30 * 60)
+			days_content = read_all_content_for_day(date, production_office=production_office)
+			memcache.set(cache_key, days_content, 30 * 60)
 
 		counts = Counter(map(extract_hour_of_publication, days_content))
 		
@@ -109,5 +119,6 @@ class DayData(webapp2.RequestHandler):
 		self.response.out.write(json.dumps(data))
 
 app = webapp2.WSGIApplication([
-	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>', handler=DayData)],
-                              debug=True)
+	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>', handler=DayData),
+	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>', handler=DayData),
+	], debug=True)

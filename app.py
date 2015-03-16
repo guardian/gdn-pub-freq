@@ -24,12 +24,19 @@ class MainPage(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))
 
 class DayPage(webapp2.RequestHandler):
-	def get(self, date):
+	def get(self, date, production_office=None):
 		template = jinja_environment.get_template('page.html')
+
+		api_url = "/api/data/{0}".format(date)
+
+		if production_office:
+			api_url = api_url + "/production-office/{0}".format(production_office)
 		
 		template_values = {
 			'date_string': date,
-			'date': datetime.datetime.strptime(date, '%Y-%m-%d')
+			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
+			'production_office': production_office,
+			'api_url' : api_url,
 		}
 
 		self.response.out.write(template.render(template_values))
@@ -108,6 +115,7 @@ app = webapp2.WSGIApplication([
 	webapp2.Route(r'/', handler=MainPage),
 	webapp2.Route(r'/title', handler=TitlePage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/hour/<hour:\d{2}>', handler=HourPage),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/previous', handler=PreviousDay),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/next', handler=NextDay),
