@@ -5,7 +5,13 @@ import json
 import logging
 import datetime
 
+from collections import namedtuple
+
 import content_api
+import config
+
+
+CountryLink = namedtuple('CountryLink', ['name', 'link'])
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
@@ -32,11 +38,20 @@ class DayPage(webapp2.RequestHandler):
 		if production_office:
 			api_url = api_url + "/production-office/{0}".format(production_office)
 		
+		def mk_path(production_office_code):
+			if production_office_code:
+				return "/production-office/{0}".format(production_office_code)
+
+			return ''
+
+		country_links = [CountryLink(name, "/day/{0}{1}".format(date, mk_path(code))) for name, code in config.production_offices]
+
 		template_values = {
 			'date_string': date,
 			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
 			'production_office': production_office,
 			'api_url' : api_url,
+			'country_links': country_links,
 		}
 
 		self.response.out.write(template.render(template_values))
