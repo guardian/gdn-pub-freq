@@ -8,7 +8,7 @@
 		<div class="col-md-12">
 			<h1 class="article-heading">Publishing history for {{date.strftime('%d/%m/%Y')}}</h1>
 
-			<p>{{date.strftime("%A")}}{% if production_office %}; production office: {{production_office|upper}}{% endif %}<br><em>Left/right arrows yesterday/tomorrow or {% for nav_link in navigation_links %}<a href="{{nav_link.url}}">{{nav_link.name}}</a>{% if not loop.last %}, {% endif %}{% endfor %} <a href="/day/{{date_string}}/previous">previous day</a>, <a href="/day/{{date_string}}/next">next day</a>, <a href="/day/{{date_string}}/previous/week">previous week</a>, <a href="/day/{{date_string}}/next/week">next week</a></em><br>{% for country_link in country_links %}<a href="{{country_link.link}}">{{country_link.name}}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>
+			<p>{{date.strftime("%A")}}{% if production_office %}; production office: {{production_office|upper}}{% endif %}<br><em>Left/right arrows yesterday/tomorrow or {% for nav_link in navigation_links %}<em><a href="{{nav_link.url}}">{{nav_link.name}}</a></em>{% if not loop.last %}, {% endif %}{% endfor %}<br>{% for country_link in country_links %}<a href="{{country_link.link}}">{{country_link.name}}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>
 			<div>
 			<canvas id="barChart" width="800" height="400"></canvas>
 			</div>
