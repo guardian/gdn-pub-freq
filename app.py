@@ -70,12 +70,22 @@ def new_date_string(date, days=1):
 	return new_date.strftime('%Y-%m-%d')
 
 class PreviousDay(webapp2.RequestHandler):
-	def get(self, date):
-		return webapp2.redirect('/day/{0}'.format(new_date_string(date, days=-1)))
+	def get(self, date, production_office=None):
+		url = '/day/{0}'.format(new_date_string(date, days=-1))
+		
+		if production_office:
+			url = '/day/{0}/production-office/{1}'.format(new_date_string(date, days=-1), production_office)
+		
+		return webapp2.redirect(url)
 
 class NextDay(webapp2.RequestHandler):
-	def get(self, date):
-		return webapp2.redirect('/day/{0}'.format(new_date_string(date)))
+	def get(self, date, production_office=None):
+		url = '/day/{0}'.format(new_date_string(date))
+		
+		if production_office:
+			url = '/day/{0}/production-office/{1}'.format(new_date_string(date), production_office)
+		
+		return webapp2.redirect(url)
 
 def new_week_string(date, days=7):
 	current_date = datetime.datetime.strptime(date, '%Y-%m-%d')
@@ -83,12 +93,22 @@ def new_week_string(date, days=7):
 	return new_date.strftime('%Y-%m-%d')
 
 class PreviousWeek(webapp2.RequestHandler):
-	def get(self, date):
-		return webapp2.redirect('/day/{0}'.format(new_week_string(date, days=-7)))
+	def get(self, date, production_office=None):
+		url = '/day/{0}'.format(new_week_string(date, days=-7))
+		
+		if production_office:
+			url = '/day/{0}/production-office/{1}'.format(new_week_string(date, days=-7), production_office)
+		
+		return webapp2.redirect(url)
 
 class NextWeek(webapp2.RequestHandler):
-	def get(self, date):
-		return webapp2.redirect('/day/{0}'.format(new_week_string(date)))
+	def get(self, date, production_office=None):
+		url = '/day/{0}'.format(new_week_string(date))
+		
+		if production_office:
+			url = '/day/{0}/production-office/{1}'.format(new_week_string(date), production_office)
+		
+		return webapp2.redirect(url)
 
 class TitlePage(webapp2.RequestHandler):
 	def get(self):
@@ -145,6 +165,10 @@ app = webapp2.WSGIApplication([
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/hour/<hour:\d{2}>', handler=HourPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>/previous', handler=PreviousDay),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>/next', handler=NextDay),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>/previous/week', handler=PreviousWeek),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>/next/week', handler=NextWeek),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/previous', handler=PreviousDay),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/next', handler=NextDay),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/previous/week', handler=PreviousWeek),
