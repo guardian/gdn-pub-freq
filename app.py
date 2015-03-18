@@ -59,6 +59,7 @@ class DayPage(webapp2.RequestHandler):
 			'api_url' : api_url,
 			'country_links': country_links,
 			'hour_base_path': urls.hour_path(date, production_office),
+			'navigation_links': urls.navigation_links(date, production_office),
 		}
 
 		self.response.out.write(template.render(template_values))
