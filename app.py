@@ -9,12 +9,18 @@ from collections import namedtuple
 
 import content_api
 import config
-
+import urls
 
 CountryLink = namedtuple('CountryLink', ['name', 'link'])
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
+
+def hour_path(date, production_office):
+	if not production_office:
+		return '/day/{0}/hour/'.format(date)
+
+	return '/day/{0}/production-office/{1}/'.format(date, production_office)
 
 class MainPage(webapp2.RequestHandler):
 	def get(self):
@@ -52,6 +58,7 @@ class DayPage(webapp2.RequestHandler):
 			'production_office': production_office,
 			'api_url' : api_url,
 			'country_links': country_links,
+			'hour_base_path': urls.hour_path(date, production_office),
 		}
 
 		self.response.out.write(template.render(template_values))
@@ -93,7 +100,7 @@ class TitlePage(webapp2.RequestHandler):
 		self.response.out.write(template.render(template_values))		
 
 class HourPage(webapp2.RequestHandler):
-	def get(self, date, hour):
+	def get(self, date, hour, production_office=None):
 		template = jinja_environment.get_template('hour.html')
 
 		logging.info(hour)
@@ -108,6 +115,9 @@ class HourPage(webapp2.RequestHandler):
 			'to-date': end_hour.isoformat(),
 			'page-size': 50,
 		}
+
+		if production_office:
+			params['production-office'] = production_office
 
 		r = content_api.search(params)
 
@@ -129,6 +139,7 @@ class HourPage(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
 	webapp2.Route(r'/', handler=MainPage),
 	webapp2.Route(r'/title', handler=TitlePage),
+	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>/hour/<hour:\d{2}>', handler=HourPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/hour/<hour:\d{2}>', handler=HourPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>', handler=DayPage),
 	webapp2.Route(r'/day/<date:\d{4}-\d{2}-\d{2}>', handler=DayPage),

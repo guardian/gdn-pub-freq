@@ -54,7 +54,7 @@ $.ajax({
     var activeBars = myBarChart.getBarsAtEvent(evt);
     if(activeBars) {
 	    //console.log(activeBars[0].label);
-	    window.location.replace('/day/{{date_string}}/hour/' + activeBars[0].label);
+	    window.location.replace('{{hour_base_path}}' + activeBars[0].label);
 	}
     };
   }
