@@ -132,6 +132,7 @@ class HourPage(webapp2.RequestHandler):
 			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
 			'hour': hour,
 			'content': content,
+			'production_office': production_office,
 		}
 
 		self.response.out.write(template.render(template_values))

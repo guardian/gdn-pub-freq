@@ -54,7 +54,7 @@ $.ajax({
     var activeBars = myBarChart.getBarsAtEvent(evt);
     if(activeBars) {
 	    //console.log(activeBars[0].label);
-	    window.location.replace('{{hour_base_path}}' + activeBars[0].label);
+	    window.location.assign('{{hour_base_path}}' + activeBars[0].label);
 	}
     };
   }
@@ -63,11 +63,11 @@ $.ajax({
 $(window).keyup(function(event){
 	//alert(event.which);
 	if(event.which === 39) {
-		window.location.replace('/day/{{date_string}}/next');
+		window.location.assign('/day/{{date_string}}/next');
 	}
 
 	if(event.which === 37) {
-		window.location.replace('/day/{{date_string}}/previous');
+		window.location.assign('/day/{{date_string}}/previous');
 	}
 });
 
