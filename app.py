@@ -39,11 +39,16 @@ class DayPage(webapp2.RequestHandler):
 	def get(self, date, production_office=None):
 		template = jinja_environment.get_template('page.html')
 
+		section = self.request.get("section", default_value=None)
+
 		api_url = "/api/data/{0}".format(date)
 
 		if production_office:
 			api_url = api_url + "/production-office/{0}".format(production_office)
 		
+		if section:
+			api_url = api_url + "/section/{0}".format(section)
+
 		def mk_path(production_office_code):
 			if production_office_code:
 				return "/production-office/{0}".format(production_office_code)

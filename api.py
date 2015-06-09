@@ -92,7 +92,7 @@ def read_all_content_for_day(date, production_office=None):
 	return all_content
 
 class DayData(webapp2.RequestHandler):
-	def get(self, date, production_office=None):
+	def get(self, date, production_office=None, section=None):
 		headers.json(self.response)
 
 		cache_key = date
@@ -119,6 +119,8 @@ class DayData(webapp2.RequestHandler):
 		self.response.out.write(json.dumps(data))
 
 app = webapp2.WSGIApplication([
+	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>/section/<section>', handler=DayData),
+	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>/section/<section>', handler=DayData),
 	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>/production-office/<production_office>', handler=DayData),
 	webapp2.Route(r'/api/data/<date:\d{4}-\d{2}-\d{2}>', handler=DayData),
 	], debug=True)
