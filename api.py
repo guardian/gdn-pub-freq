@@ -57,7 +57,7 @@ def extract_hour_of_publication(content):
 
 	return dt_elements[3]
 
-def read_all_content_for_day(date, production_office=None):
+def read_all_content_for_day(date, production_office=None, section=None):
 
 	params = {
 		'api-key': content_api.capi_key(),
@@ -69,11 +69,14 @@ def read_all_content_for_day(date, production_office=None):
 	if production_office:
 		params['production-office'] = production_office
 
+	if section:
+		params['section'] = section
+
 
 	url = "http://{host}/search?{params}".format(host=content_api.capi_host(),
 		params=urllib.urlencode(params))
 
-	#logging.info(url)
+	logging.info(url)
 
 	r = fetch(url)
 
@@ -107,13 +110,14 @@ class DayData(webapp2.RequestHandler):
 		if production_office:
 			cache_key = "{0}-{1}".format(date, production_office)
 
+		if section and production_office:
+			cache_key = "{0}-{1}-{2}".format(date, production_office, section)
+
 		days_content = memcache.get(cache_key)
 
 		if not days_content:
-			days_content = read_all_content_for_day(date, production_office=production_office)
+			days_content = read_all_content_for_day(date, production_office=production_office, section=section)
 			memcache.set(cache_key, days_content, 30 * 60)
-
-		logging.info(len(days_content))
 
 		counts = Counter(map(extract_hour_of_publication, days_content))
 		
