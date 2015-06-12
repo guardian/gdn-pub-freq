@@ -65,11 +65,11 @@ $.ajax({
 $(window).keyup(function(event){
 	//alert(event.which);
 	if(event.which === 39) {
-		window.location.assign('/day/{{date_string}}/next');
+		window.location.assign('{{navigation_urls.next_day}}');
 	}
 
 	if(event.which === 37) {
-		window.location.assign('/day/{{date_string}}/previous');
+		window.location.assign('{{navigation_urls.previous_day}}');
 	}
 });
 

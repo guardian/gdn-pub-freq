@@ -27,3 +27,5 @@ def navigation_links(date, production_office):
 
 	return [Link(name, mk_path(path, date, production_office)) for name, path in navigation]
 
+def navigation(date, production_office):
+	return {name.replace(' ', '_'):url for name, url in navigation_links(date, production_office)}
