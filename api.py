@@ -116,13 +116,17 @@ class DayData(webapp2.RequestHandler):
 		logging.info(len(days_content))
 
 		counts = Counter(map(extract_hour_of_publication, days_content))
+
+		hour_counts = {str(i):0 for i in range(24)}
+
+		hour_counts.update(counts)
 		
 		data = {
 			'date': date,
-			'hour_counts': counts,
+			'hour_counts': hour_counts,
 			'total_content': len(days_content),
-			'count_series': [counts[k] for k in sorted(counts.keys())],
-			'hour_series': [k for k in sorted(counts.keys())]
+			'count_series': [hour_counts[k] for k in sorted(hour_counts.keys())],
+			'hour_series': [k for k in sorted(hour_counts.keys())]
 		}
 
 		self.response.out.write(json.dumps(data))
