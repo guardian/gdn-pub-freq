@@ -131,6 +131,8 @@ class HourPage(webapp2.RequestHandler):
 		start_hour = datetime.datetime.strptime(hour_string, '%Y-%m-%dT%H')
 		end_hour = start_hour + datetime.timedelta(hours=1)
 
+		parameters_description = ''
+
 		params = {
 			'api-key': content_api.capi_key(),
 			'from-date': start_hour.isoformat(),
@@ -140,10 +142,15 @@ class HourPage(webapp2.RequestHandler):
 
 		if production_office:
 			params['production-office'] = production_office
+			parameters_description += 'Production Office: {0}'.format(production_office.upper())
 
 		section = self.request.get('section', None)
 		if section:
 			params['section'] = section
+
+			if production_office:
+				parameters_description += '; '
+			parameters_description += 'Section: {0}'.format(section)
 
 		r = content_api.search(params)
 
@@ -159,6 +166,8 @@ class HourPage(webapp2.RequestHandler):
 			'hour': hour,
 			'content': content,
 			'production_office': production_office,
+			'section': section,
+			'parameters_summary': parameters_description
 		}
 
 		self.response.out.write(template.render(template_values))
