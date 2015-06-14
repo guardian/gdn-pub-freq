@@ -131,7 +131,7 @@ class HourPage(webapp2.RequestHandler):
 	def get(self, date, hour, production_office=None):
 		template = jinja_environment.get_template('hour.html')
 
-		logging.info(hour)
+		#logging.info(hour)
 
 		hour_string = '{0}T{1}'.format(date, hour)
 		start_hour = datetime.datetime.strptime(hour_string, '%Y-%m-%dT%H')
@@ -146,6 +146,10 @@ class HourPage(webapp2.RequestHandler):
 
 		if production_office:
 			params['production-office'] = production_office
+
+		section = self.request.get('section', None)
+		if section:
+			params['section'] = section
 
 		r = content_api.search(params)
 
