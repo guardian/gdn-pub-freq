@@ -110,6 +110,9 @@ class DayData(webapp2.RequestHandler):
 		if production_office:
 			cache_key = "{0}-{1}".format(date, production_office)
 
+		if section and not production_office:
+			cache_key = '{0}-s{1}'.format(date, section)
+
 		if section and production_office:
 			cache_key = "{0}-{1}-{2}".format(date, production_office, section)
 
