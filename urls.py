@@ -2,12 +2,12 @@ from collections import namedtuple
 
 Link = namedtuple('Link', ['name', 'url'])
 
-def hour_path(date, production_office):
+def hour_path(date, production_office, section=None):
+
 	if not production_office:
 		return '/day/{0}/hour/'.format(date)
 
 	return '/day/{0}/production-office/{1}/hour/'.format(date, production_office)
-
 
 def navigation_links(date, production_office):
 

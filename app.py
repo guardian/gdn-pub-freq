@@ -16,12 +16,6 @@ CountryLink = namedtuple('CountryLink', ['name', 'link'])
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
 
-def hour_path(date, production_office):
-	if not production_office:
-		return '/day/{0}/hour/'.format(date)
-
-	return '/day/{0}/production-office/{1}/'.format(date, production_office)
-
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template = jinja_environment.get_template('index.html')
