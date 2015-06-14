@@ -117,7 +117,7 @@ class DayData(webapp2.RequestHandler):
 
 		counts = Counter(map(extract_hour_of_publication, days_content))
 
-		hour_counts = {str(i):0 for i in range(24)}
+		hour_counts = {str(i).zfill(2):0 for i in range(24)}
 
 		hour_counts.update(counts)
 		
