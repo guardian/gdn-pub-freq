@@ -61,6 +61,7 @@ class DayPage(webapp2.RequestHandler):
 			'date_string': date,
 			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
 			'production_office': production_office,
+			'section': section,
 			'api_url' : api_url,
 			'country_links': country_links,
 			'hour_base_path': urls.hour_path(date, production_office),
