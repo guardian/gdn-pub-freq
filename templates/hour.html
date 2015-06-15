@@ -8,7 +8,9 @@
 		<div class="col-md-12">
 			<h1 class="article-heading">Hour {{hour}} of {{date.strftime('%d/%m/%Y')}} </h1>
 
-			{% if production_office %}<p>{{production_office|upper}}</p>{% endif %}
+			{% if parameters_summary %}
+			<p>{{parameters_summary}}</p>
+			{% endif %}
 
 			<ul>
 				{% for item in content %}

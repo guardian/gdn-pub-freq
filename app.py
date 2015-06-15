@@ -16,12 +16,6 @@ CountryLink = namedtuple('CountryLink', ['name', 'link'])
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
 
-def hour_path(date, production_office):
-	if not production_office:
-		return '/day/{0}/hour/'.format(date)
-
-	return '/day/{0}/production-office/{1}/'.format(date, production_office)
-
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template = jinja_environment.get_template('index.html')
@@ -39,11 +33,16 @@ class DayPage(webapp2.RequestHandler):
 	def get(self, date, production_office=None):
 		template = jinja_environment.get_template('page.html')
 
+		section = self.request.get("section", default_value=None)
+
 		api_url = "/api/data/{0}".format(date)
 
 		if production_office:
 			api_url = api_url + "/production-office/{0}".format(production_office)
 		
+		if section:
+			api_url = api_url + "/section/{0}".format(section)
+
 		def mk_path(production_office_code):
 			if production_office_code:
 				return "/production-office/{0}".format(production_office_code)
@@ -56,6 +55,7 @@ class DayPage(webapp2.RequestHandler):
 			'date_string': date,
 			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
 			'production_office': production_office,
+			'section': section,
 			'api_url' : api_url,
 			'country_links': country_links,
 			'hour_base_path': urls.hour_path(date, production_office),
@@ -125,11 +125,13 @@ class HourPage(webapp2.RequestHandler):
 	def get(self, date, hour, production_office=None):
 		template = jinja_environment.get_template('hour.html')
 
-		logging.info(hour)
+		#logging.info(hour)
 
 		hour_string = '{0}T{1}'.format(date, hour)
 		start_hour = datetime.datetime.strptime(hour_string, '%Y-%m-%dT%H')
 		end_hour = start_hour + datetime.timedelta(hours=1)
+
+		parameters_description = ''
 
 		params = {
 			'api-key': content_api.capi_key(),
@@ -140,6 +142,15 @@ class HourPage(webapp2.RequestHandler):
 
 		if production_office:
 			params['production-office'] = production_office
+			parameters_description += 'Production Office: {0}'.format(production_office.upper())
+
+		section = self.request.get('section', None)
+		if section:
+			params['section'] = section
+
+			if production_office:
+				parameters_description += '; '
+			parameters_description += 'Section: {0}'.format(section)
 
 		r = content_api.search(params)
 
@@ -155,6 +166,8 @@ class HourPage(webapp2.RequestHandler):
 			'hour': hour,
 			'content': content,
 			'production_office': production_office,
+			'section': section,
+			'parameters_summary': parameters_description
 		}
 
 		self.response.out.write(template.render(template_values))
