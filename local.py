@@ -45,28 +45,43 @@ def rewrite_publication_date(production_office, content_item):
 
 def hour(production_office, iso_date, hour):
 
+	logging.info(production_office)
 	tz = timezones.get(production_office, timezones['uk'])
 	iso_d = isodate.parse_date(iso_date)
 
-	local_dt = datetime.datetime(year=iso_d.year,
+	logging.info(tz)
+
+	local_start_dt = datetime.datetime(year=iso_d.year,
 		month=iso_d.month,
 		day=iso_d.day,
 		hour=int(hour),
 		minute=0, tzinfo=tz)
 
-	utc_dt = local_dt.astimezone(tz=pytz.utc)
+	local_end_dt = datetime.datetime(year=iso_d.year,
+		month=iso_d.month,
+		day=iso_d.day,
+		hour=int(hour),
+		minute=59, tzinfo=tz)
+
+	logging.info(local_start_dt)
+	logging.info(local_end_dt)
+
+	utc_start_dt = local_start_dt.astimezone(tz=pytz.utc)
+	utc_end_dt = local_end_dt.astimezone(tz=pytz.utc)
+
+	logging.info(utc_start_dt)
+	logging.info(utc_end_dt)
 
 	start = datetime.datetime(year=iso_d.year,
 		month=iso_d.month,
 		day=iso_d.day,
-		hour=utc_dt.hour,
-		minute=0, tzinfo=pytz.utc)
+		hour=utc_start_dt.hour,
+		minute=utc_start_dt.minute, tzinfo=pytz.utc)
 
 	end = datetime.datetime(year=iso_d.year,
 		month=iso_d.month,
 		day=iso_d.day,
-		hour=utc_dt.hour,
-		minute=59, tzinfo=pytz.utc)
+		hour=utc_end_dt.hour,
+		minute=utc_end_dt.minute, tzinfo=pytz.utc)
 
-	return (start.isoformat(),
-		end.isoformat())
+	return (start.isoformat(), end.isoformat())

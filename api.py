@@ -57,7 +57,7 @@ def extract_hour_of_publication(production_office, content):
 	#pattern = re.compile(r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})Z$')
 
 
-	#logging.info(content['webPublicationDate'])
+	logging.info(content['webPublicationDate'])
 
 
 	if production_office:
@@ -65,6 +65,7 @@ def extract_hour_of_publication(production_office, content):
 
 	iso_str_date = content['webPublicationDate']
 	iso_dt = isodate.parse_datetime(content['webPublicationDate'])
+	logging.info(iso_dt)
 
 	#logging.info(iso_dt)
 	#logging.info(iso_dt.hour)

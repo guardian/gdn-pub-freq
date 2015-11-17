@@ -6,11 +6,13 @@ import logging
 import datetime
 
 from collections import namedtuple
+from functools import partial
 
 import content_api
 import config
 import urls
 import local
+import api
 
 CountryLink = namedtuple('CountryLink', ['name', 'link'])
 
@@ -126,46 +128,22 @@ class HourPage(webapp2.RequestHandler):
 	def get(self, date, hour, production_office=None):
 		template = jinja_environment.get_template('hour.html')
 
-		logging.info(hour)
-
-		start, end = local.hour(production_office, date, hour)
-
 		parameters_description = ''
 
-		params = {
-			'api-key': content_api.capi_key(),
-			'from-date': start,
-			'to-date': end,
-			'page-size': 50,
-		}
-
 		if production_office:
-			params['production-office'] = production_office
 			parameters_description += 'Production Office: {0}'.format(production_office.upper())
 
-		section = self.request.get('section', None)
-		if section:
-			params['section'] = section
+		logging.info(hour)
 
-			if production_office:
-				parameters_description += '; '
-			parameters_description += 'Section: {0}'.format(section)
+		days_content = api.read_all_content_for_day(date, production_office=production_office)
 
-		r = content_api.search(params)
-
-		content = []
-
-		if r:
-			data = json.loads(r)
-			content = data.get("response", {}).get("results", [])
-		
+		content = [i for i in days_content if partial(api.extract_hour_of_publication, production_office)(i) == hour]
 		template_values = {
 			'date_string': date,
 			'date': datetime.datetime.strptime(date, '%Y-%m-%d'),
 			'hour': hour,
 			'content': content,
 			'production_office': production_office,
-			'section': section,
 			'parameters_summary': parameters_description
 		}
 
