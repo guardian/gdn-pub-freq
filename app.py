@@ -10,6 +10,7 @@ from collections import namedtuple
 import content_api
 import config
 import urls
+import local
 
 CountryLink = namedtuple('CountryLink', ['name', 'link'])
 
@@ -125,18 +126,16 @@ class HourPage(webapp2.RequestHandler):
 	def get(self, date, hour, production_office=None):
 		template = jinja_environment.get_template('hour.html')
 
-		#logging.info(hour)
+		logging.info(hour)
 
-		hour_string = '{0}T{1}'.format(date, hour)
-		start_hour = datetime.datetime.strptime(hour_string, '%Y-%m-%dT%H')
-		end_hour = start_hour + datetime.timedelta(hours=1)
+		start, end = local.hour(production_office, date, hour)
 
 		parameters_description = ''
 
 		params = {
 			'api-key': content_api.capi_key(),
-			'from-date': start_hour.isoformat(),
-			'to-date': end_hour.isoformat(),
+			'from-date': start,
+			'to-date': end,
 			'page-size': 50,
 		}
 

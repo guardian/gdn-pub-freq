@@ -19,11 +19,10 @@ from google.appengine.api import memcache
 import headers
 import content_api
 import local
+import constants
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
-
-cache_capi = False
 
 def page_url(date, page, production_office=None):
 	params = {
@@ -137,7 +136,7 @@ class DayData(webapp2.RequestHandler):
 
 		if not days_content:
 			days_content = read_all_content_for_day(date, production_office=production_office, section=section)
-			if cache_capi:
+			if constants.cache_capi:
 				memcache.set(cache_key, days_content, 30 * 60)
 
 		counts = Counter(map(partial(extract_hour_of_publication, production_office), days_content))

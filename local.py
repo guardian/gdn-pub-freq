@@ -42,3 +42,31 @@ def rewrite_publication_date(production_office, content_item):
 
 	content_item['webPublicationDate'] = rewritten_date
 	return content_item
+
+def hour(production_office, iso_date, hour):
+
+	tz = timezones.get(production_office, timezones['uk'])
+	iso_d = isodate.parse_date(iso_date)
+
+	local_dt = datetime.datetime(year=iso_d.year,
+		month=iso_d.month,
+		day=iso_d.day,
+		hour=int(hour),
+		minute=0, tzinfo=tz)
+
+	utc_dt = local_dt.astimezone(tz=pytz.utc)
+
+	start = datetime.datetime(year=iso_d.year,
+		month=iso_d.month,
+		day=iso_d.day,
+		hour=utc_dt.hour,
+		minute=0, tzinfo=pytz.utc)
+
+	end = datetime.datetime(year=iso_d.year,
+		month=iso_d.month,
+		day=iso_d.day,
+		hour=utc_dt.hour,
+		minute=59, tzinfo=pytz.utc)
+
+	return (start.isoformat(),
+		end.isoformat())
