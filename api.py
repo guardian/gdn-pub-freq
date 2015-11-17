@@ -6,6 +6,10 @@ import logging
 import urllib
 import re
 
+from functools import partial
+
+import isodate
+
 from collections import Counter
 
 from google.appengine.api import urlfetch
@@ -14,10 +18,12 @@ from google.appengine.api import memcache
 
 import headers
 import content_api
-import queries
+import local
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
+
+cache_capi = False
 
 def page_url(date, page, production_office=None):
 	params = {
@@ -48,19 +54,27 @@ def extract_results(rpc):
 	data = response.get('response', {})
 	return data.get('results', [])
 
-def extract_hour_of_publication(content):
-	pattern = re.compile(r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})Z$')
+def extract_hour_of_publication(production_office, content):
+	#pattern = re.compile(r'^(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})Z$')
 
 
 	#logging.info(content['webPublicationDate'])
-	dt_elements = pattern.search(content['webPublicationDate']).groups()
-	#logging.info(dt_elements)
 
-	return dt_elements[3]
+
+	if production_office:
+		content = local.rewrite_publication_date(production_office, content)
+
+	iso_str_date = content['webPublicationDate']
+	iso_dt = isodate.parse_datetime(content['webPublicationDate'])
+
+	#logging.info(iso_dt)
+	#logging.info(iso_dt.hour)
+
+	return str(iso_dt.hour).zfill(2)
 
 def read_all_content_for_day(date, production_office=None, section=None):
 
-	start, end = queries.date_start_and_end(production_office, date)
+	start, end = local.date_start_and_end(production_office, date)
 
 	params = {
 		'api-key': content_api.capi_key(),
@@ -123,9 +137,10 @@ class DayData(webapp2.RequestHandler):
 
 		if not days_content:
 			days_content = read_all_content_for_day(date, production_office=production_office, section=section)
-			memcache.set(cache_key, days_content, 30 * 60)
+			if cache_capi:
+				memcache.set(cache_key, days_content, 30 * 60)
 
-		counts = Counter(map(extract_hour_of_publication, days_content))
+		counts = Counter(map(partial(extract_hour_of_publication, production_office), days_content))
 
 		hour_counts = {str(i).zfill(2):0 for i in range(24)}
 
