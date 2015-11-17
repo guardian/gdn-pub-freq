@@ -14,6 +14,7 @@ from google.appengine.api import memcache
 
 import headers
 import content_api
+import queries
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
@@ -59,10 +60,12 @@ def extract_hour_of_publication(content):
 
 def read_all_content_for_day(date, production_office=None, section=None):
 
+	start, end = queries.date_start_and_end(production_office, date)
+
 	params = {
 		'api-key': content_api.capi_key(),
-		'from-date': date,
-		'to-date': date,
+		'from-date': start,
+		'to-date': end,
 		'page-size': 50,
 	}
 
